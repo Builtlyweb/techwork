@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – sgTechworks Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="shortcut icon" href="sgggg.png">
+  <style>
+    :root {
+      --bg:#f5f5f3;--surface:#fff;--accent:#00c896;--accent-dark:#009e77;
+      --accent-glow:rgba(0,200,150,0.18);--text-primary:#111110;--text-secondary:#6b6b66;
+      --text-light:#a8a8a2;--border:#e8e8e4;
+      --shadow-sm:0 2px 12px rgba(0,0,0,0.06);--shadow-md:0 8px 32px rgba(0,0,0,0.10);
+      --shadow-lg:0 20px 60px rgba(0,0,0,0.12);--radius:16px;--radius-sm:8px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:16px;line-height:1.6;min-height:100vh}
+
+    /* ── LOGIN ── */
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .login-card{background:var(--surface);border-radius:var(--radius);padding:3rem;width:100%;max-width:400px;box-shadow:var(--shadow-lg);border:1px solid var(--border)}
+    .login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:0.5rem}
+    .login-logo span{color:var(--accent)}
+    .login-subtitle{font-size:0.875rem;color:var(--text-secondary);margin-bottom:2rem;font-weight:300}
+    .login-group{margin-bottom:1.25rem}
+    .login-group label{display:block;font-size:0.8rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-secondary);margin-bottom:0.5rem}
+    .login-group input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text-primary);outline:none;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none}
+    .login-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .btn-login{width:100%;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:500;padding:0.9rem;border-radius:100px;border:none;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 20px var(--accent-glow);margin-top:0.5rem}
+    .btn-login:hover{background:var(--accent-dark)}
+    .login-error{display:none;color:#ff5c5c;font-size:0.85rem;margin-top:0.75rem;text-align:center}
+
+    /* ── ADMIN LAYOUT ── */
+    .admin-wrap{display:none;min-height:100vh;flex-direction:column}
+    .admin-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 max(24px,calc((100% - 1200px)/2));height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm)}
+    .admin-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-0.02em;text-decoration:none;color:var(--text-primary)}
+    .admin-logo span{color:var(--accent)}
+    .admin-header-right{display:flex;align-items:center;gap:1rem}
+    .admin-nav-link{font-size:0.875rem;font-weight:500;color:var(--text-secondary);text-decoration:none;transition:color 0.2s}
+    .admin-nav-link:hover{color:var(--accent)}
+    .btn-logout{background:none;border:1px solid var(--border);border-radius:100px;padding:0.4rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s}
+    .btn-logout:hover{border-color:#ff5c5c;color:#ff5c5c}
+
+    .admin-body{flex:1;padding:2.5rem max(24px,calc((100% - 1200px)/2))}
+    .admin-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+    .admin-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.02em}
+    .admin-subtitle{font-size:0.9rem;color:var(--text-secondary);font-weight:300;margin-top:0.25rem}
+    .btn-add{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;padding:0.65rem 1.4rem;border-radius:100px;border:none;cursor:pointer;transition:background 0.2s,box-shadow 0.2s;box-shadow:0 4px 16px var(--accent-glow)}
+    .btn-add:hover{background:var(--accent-dark)}
+    .btn-add svg{width:16px;height:16px}
+
+    /* STATS */
+    .admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+    .stat-card{background:var(--surface);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+    .stat-card-val{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--text-primary);letter-spacing:-0.02em}
+    .stat-card-val span{color:var(--accent)}
+    .stat-card-label{font-size:0.8rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.25rem}
+
+    /* PRODUCT TABLE */
+    .product-table-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden}
+    .product-table{width:100%;border-collapse:collapse}
+    .product-table th{padding:1rem 1.25rem;text-align:left;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);border-bottom:1px solid var(--border);background:var(--bg)}
+    .product-table td{padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.9rem;vertical-align:middle}
+    .product-table tr:last-child td{border-bottom:none}
+    .product-table tr:hover td{background:var(--bg)}
+    .table-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
+    .table-cat{display:inline-block;background:var(--accent-glow);color:var(--accent);font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:0.15rem 0.5rem;border-radius:100px}
+    .table-price{font-family:'Syne',sans-serif;font-weight:700;color:var(--text-primary)}
+    .table-actions{display:flex;gap:0.5rem;align-items:center}
+    .btn-edit,.btn-delete{border:none;border-radius:8px;cursor:pointer;padding:0.4rem 0.75rem;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;transition:all 0.2s;display:flex;align-items:center;gap:0.35rem}
+    .btn-edit{background:var(--bg);border:1px solid var(--border);color:var(--text-secondary)}
+    .btn-edit:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-delete{background:#fff0f0;border:1px solid #ffd6d6;color:#ff5c5c}
+    .btn-delete:hover{background:#ff5c5c;color:#fff;border-color:#ff5c5c}
+    .btn-edit svg,.btn-delete svg{width:13px;height:13px}
+    .table-empty{text-align:center;padding:4rem 2rem;color:var(--text-light)}
+    .table-empty svg{width:48px;height:48px;opacity:0.25;margin-bottom:1rem;display:block;margin-left:auto;margin-right:auto}
+    .table-empty p{font-size:0.9rem}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface);border-radius:var(--radius);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modal-in 0.22s ease}
+    @keyframes modal-in{from{opacity:0;transform:scale(0.96) translateY(12px)}to{opacity:1;transform:none}}
+    .modal-header{padding:1.75rem 2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .modal-header h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:-0.02em}
+    .modal-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all 0.2s}
+    .modal-close:hover{background:var(--bg)}
+    .modal-close svg{width:15px;height:15px}
+    .modal-body{padding:2rem}
+    .f-group{margin-bottom:1.25rem}
+    .f-group label{display:block;font-size:0.8rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-secondary);margin-bottom:0.5rem}
+    .f-group input,.f-group select,.f-group textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text-primary);outline:none;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none}
+    .f-group input:focus,.f-group select:focus,.f-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .f-group textarea{resize:vertical;min-height:80px}
+    .f-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .f-hint{font-size:0.75rem;color:var(--text-light);margin-top:0.35rem}
+    .modal-actions{display:flex;gap:0.75rem;justify-content:flex-end;padding:0 2rem 2rem}
+    .btn-cancel{background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:0.65rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all 0.2s}
+    .btn-cancel:hover{border-color:var(--text-secondary);color:var(--text-primary)}
+    .btn-save{background:var(--accent);color:#fff;border:none;border-radius:100px;padding:0.65rem 1.75rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 16px var(--accent-glow)}
+    .btn-save:hover{background:var(--accent-dark)}
+
+    /* IMAGE PREVIEW */
+    .img-preview{width:100%;height:140px;border-radius:var(--radius-sm);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;overflow:hidden;background:var(--bg);transition:border-color 0.2s}
+    .img-preview.has-img{border-style:solid;border-color:var(--border)}
+    .img-preview img{width:100%;height:100%;object-fit:cover}
+    .img-preview svg{color:var(--accent);opacity:0.3;width:40px;height:40px}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text-primary);color:#fff;padding:0.75rem 1.5rem;border-radius:100px;font-size:0.875rem;font-weight:500;z-index:400;transition:transform 0.3s,opacity 0.3s;opacity:0;white-space:nowrap;display:flex;align-items:center;gap:0.5rem}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast-dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+    @media(max-width:900px){.admin-stats{grid-template-columns:1fr 1fr}.product-table th:nth-child(3),.product-table td:nth-child(3){display:none}}
+    @media(max-width:600px){.admin-stats{grid-template-columns:1fr}.f-row{grid-template-columns:1fr}.admin-body{padding:1.5rem 16px}}
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN ── -->
+  <div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <div class="login-logo">sg<span>Techworks</span></div>
+      <p class="login-subtitle">Admin-Bereich · Bitte einloggen</p>
+      <div class="login-group">
+        <label>Benutzername</label>
+        <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
+      </div>
+      <div class="login-group">
+        <label>Passwort</label>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="btn-login" onclick="doLogin()">Einloggen →</button>
+      <div class="login-error" id="loginError">Falscher Benutzername oder Passwort.</div>
+    </div>
+  </div>
+
+  <!-- ── ADMIN ── -->
+  <div class="admin-wrap" id="adminWrap">
+    <header class="admin-header">
+      <a href="index.html" class="admin-logo">sg<span>Techworks</span> <span style="font-size:0.75rem;font-weight:400;color:var(--text-light);margin-left:6px">Admin</span></a>
+      <div class="admin-header-right">
+        <a href="shop.html" class="admin-nav-link" target="_blank">Shop ansehen ↗</a>
+        <button class="btn-logout" onclick="doLogout()">Ausloggen</button>
+      </div>
+    </header>
+
+    <div class="admin-body">
+      <div class="admin-section-header">
+        <div>
+          <div class="admin-title">Produkte verwalten</div>
+          <div class="admin-subtitle">Produkte hinzufügen, bearbeiten oder löschen</div>
+        </div>
+        <button class="btn-add" onclick="openModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Produkt hinzufügen
+        </button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-card-val" id="statTotal">0</div>
+          <div class="stat-card-label">Produkte total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val" id="statCategories">0</div>
+          <div class="stat-card-label">Kategorien</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val" id="statAvgPrice">–</div>
+          <div class="stat-card-label">Ø Preis (CHF)</div>
+        </div>
+      </div>
+
+      <div class="product-table-wrap">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Produkt</th>
+              <th>Kategorie</th>
+              <th>Zustand</th>
+              <th>Preis</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRODUCT MODAL ── -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Produkt hinzufügen</h3>
+        <button class="modal-close" onclick="closeModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId" />
+
+        <div class="f-group">
+          <label>Produktbild (URL)</label>
+          <div class="img-preview" id="imgPreview">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <input type="url" id="fImage" placeholder="https://example.com/bild.jpg" oninput="previewImage(this.value)" />
+          <p class="f-hint">Direkte Bild-URL eingeben (optional). Ohne Bild wird ein Platzhalter angezeigt.</p>
+        </div>
+
+        <div class="f-row">
+          <div class="f-group">
+            <label>Produktname *</label>
+            <input type="text" id="fName" placeholder="z.B. iPhone 13 128 GB" />
+          </div>
+          <div class="f-group">
+            <label>Kategorie *</label>
+            <select id="fCategory">
+              <option value="laptop">Laptop</option>
+              <option value="smartphone">Smartphone</option>
+              <option value="tablet">Tablet</option>
+              <option value="zubehoer">Zubehör</option>
+              <option value="sonstiges">Sonstiges</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Beschreibung</label>
+          <textarea id="fDesc" placeholder="Kurze Beschreibung des Geräts, Besonderheiten …"></textarea>
+        </div>
+
+        <div class="f-row">
+          <div class="f-group">
+            <label>Preis (CHF) *</label>
+            <input type="number" id="fPrice" placeholder="299" min="0" />
+          </div>
+          <div class="f-group">
+            <label>Ursprünglicher Preis (CHF)</label>
+            <input type="number" id="fOldPrice" placeholder="599 (optional)" min="0" />
+          </div>
+        </div>
+
+        <div class="f-row">
+          <div class="f-group">
+            <label>Zustand</label>
+            <select id="fCondition">
+              <option value="">– kein –</option>
+              <option value="Neuwertig">Neuwertig</option>
+              <option value="Sehr gut">Sehr gut</option>
+              <option value="Gut">Gut</option>
+              <option value="Akzeptabel">Akzeptabel</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Badge / Label</label>
+            <input type="text" id="fBadge" placeholder="z.B. Neu, Deal, Beliebt …" />
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Spezifikationen</label>
+          <input type="text" id="fSpecs" placeholder="z.B. 128 GB, iOS 17, Midnight (kommagetrennt)" />
+          <p class="f-hint">Kommagetrennte Liste, z.B.: 8 GB RAM, 256 GB SSD, macOS 14</p>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveProduct()">Speichern →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="toast-dot"></span><span id="toastMsg"></span></div>
+
+  <script>
+    // ── Auth ─────────────────────────────────────────────────────────────
+    // Change these credentials directly in the code:
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'sgtechworks2025';
+
+    function doLogin() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value;
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('sgtw_auth', '1');
+        showAdmin();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').style.borderColor = '#ff5c5c';
+        setTimeout(() => document.getElementById('loginPass').style.borderColor = '', 2000);
+      }
+    }
+
+    function doLogout() { sessionStorage.removeItem('sgtw_auth'); location.reload(); }
+
+    function showAdmin() {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('adminWrap').style.display = 'flex';
+      renderTable();
+      updateStats();
+    }
+
+    // Check session on load
+    if (sessionStorage.getItem('sgtw_auth') === '1') showAdmin();
+
+    // ── Storage ───────────────────────────────────────────────────────────
+    function getProducts() {
+      try { return JSON.parse(localStorage.getItem('sgtw_products') || '[]'); } catch { return []; }
+    }
+    function saveProducts(arr) { localStorage.setItem('sgtw_products', JSON.stringify(arr)); }
+    function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+    // ── Stats ─────────────────────────────────────────────────────────────
+    function updateStats() {
+      const products = getProducts();
+      document.getElementById('statTotal').textContent = products.length;
+      const cats = new Set(products.map(p => p.category)).size;
+      document.getElementById('statCategories').textContent = cats || 0;
+      if (products.length > 0) {
+        const avg = Math.round(products.reduce((s,p) => s + Number(p.price), 0) / products.length);
+        document.getElementById('statAvgPrice').textContent = avg;
+      } else {
+        document.getElementById('statAvgPrice').textContent = '–';
+      }
+    }
+
+    // ── Table ─────────────────────────────────────────────────────────────
+    function categoryLabel(c) {
+      return {laptop:'Laptop',smartphone:'Smartphone',tablet:'Tablet',zubehoer:'Zubehör',sonstiges:'Sonstiges'}[c] || c;
+    }
+
+    function renderTable() {
+      const products = getProducts();
+      const tbody = document.getElementById('productTableBody');
+      if (products.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="table-empty"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><p>Noch keine Produkte vorhanden.<br>Klicke auf «Produkt hinzufügen» um zu starten.</p></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td><div class="table-name">${p.name}</div>${p.badge ? `<span style="font-size:0.7rem;color:var(--accent)">${p.badge}</span>` : ''}</td>
+          <td><span class="table-cat">${categoryLabel(p.category)}</span></td>
+          <td>${p.condition || '–'}</td>
+          <td class="table-price">CHF ${p.price}.–${p.oldPrice ? `<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-light);text-decoration:line-through">CHF ${p.oldPrice}.–</span>` : ''}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-edit" onclick="editProduct('${p.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Bearbeiten
+              </button>
+              <button class="btn-delete" onclick="deleteProduct('${p.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                Löschen
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    // ── Modal ─────────────────────────────────────────────────────────────
+    function clearModal() {
+      ['fName','fDesc','fPrice','fOldPrice','fBadge','fSpecs','fImage'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fCategory').value = 'laptop';
+      document.getElementById('fCondition').value = '';
+      document.getElementById('editId').value = '';
+      document.getElementById('imgPreview').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+      document.getElementById('imgPreview').classList.remove('has-img');
+    }
+
+    function openModal() {
+      clearModal();
+      document.getElementById('modalTitle').textContent = 'Produkt hinzufügen';
+      document.getElementById('productModal').classList.add('open');
+    }
+
+    function closeModal() { document.getElementById('productModal').classList.remove('open'); }
+
+    function editProduct(id) {
+      const p = getProducts().find(p => p.id === id);
+      if (!p) return;
+      clearModal();
+      document.getElementById('modalTitle').textContent = 'Produkt bearbeiten';
+      document.getElementById('editId').value = p.id;
+      document.getElementById('fName').value = p.name || '';
+      document.getElementById('fDesc').value = p.desc || '';
+      document.getElementById('fCategory').value = p.category || 'laptop';
+      document.getElementById('fPrice').value = p.price || '';
+      document.getElementById('fOldPrice').value = p.oldPrice || '';
+      document.getElementById('fCondition').value = p.condition || '';
+      document.getElementById('fBadge').value = p.badge || '';
+      document.getElementById('fSpecs').value = p.specs || '';
+      document.getElementById('fImage').value = p.image || '';
+      if (p.image) previewImage(p.image);
+      document.getElementById('productModal').classList.add('open');
+    }
+
+    function previewImage(url) {
+      const preview = document.getElementById('imgPreview');
+      if (url) {
+        preview.innerHTML = `<img src="${url}" alt="Vorschau" onerror="this.parentElement.innerHTML='<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg>';this.parentElement.classList.remove('has-img')">`;
+        preview.classList.add('has-img');
+      } else {
+        preview.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+        preview.classList.remove('has-img');
+      }
+    }
+
+    function saveProduct() {
+      const name = document.getElementById('fName').value.trim();
+      const price = document.getElementById('fPrice').value.trim();
+      if (!name || !price) {
+        if (!name) { const el=document.getElementById('fName'); el.style.borderColor='#ff5c5c'; el.addEventListener('input',()=>el.style.borderColor='',{once:true}); }
+        if (!price) { const el=document.getElementById('fPrice'); el.style.borderColor='#ff5c5c'; el.addEventListener('input',()=>el.style.borderColor='',{once:true}); }
+        showToast('Bitte Pflichtfelder ausfüllen');
+        return;
+      }
+
+      const editId = document.getElementById('editId').value;
+      const product = {
+        id: editId || genId(),
+        name,
+        category: document.getElementById('fCategory').value,
+        desc: document.getElementById('fDesc').value.trim(),
+        price: Number(price),
+        oldPrice: document.getElementById('fOldPrice').value ? Number(document.getElementById('fOldPrice').value) : null,
+        condition: document.getElementById('fCondition').value || null,
+        badge: document.getElementById('fBadge').value.trim() || null,
+        specs: document.getElementById('fSpecs').value.trim() || null,
+        image: document.getElementById('fImage').value.trim() || null,
+      };
+
+      const products = getProducts();
+      if (editId) {
+        const idx = products.findIndex(p => p.id === editId);
+        if (idx !== -1) products[idx] = product;
+      } else {
+        products.push(product);
+      }
+
+      saveProducts(products);
+      closeModal();
+      renderTable();
+      updateStats();
+      showToast(editId ? 'Produkt aktualisiert ✓' : 'Produkt hinzugefügt ✓');
+    }
+
+    function deleteProduct(id) {
+      if (!confirm('Produkt wirklich löschen?')) return;
+      const products = getProducts().filter(p => p.id !== id);
+      saveProducts(products);
+      renderTable();
+      updateStats();
+      showToast('Produkt gelöscht');
+    }
+
+    // ── Toast ─────────────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      clearTimeout(toastTimer);
+      const t=document.getElementById('toast');
+      document.getElementById('toastMsg').textContent=msg;
+      t.classList.add('show');
+      toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+    }
+  </script>
+</body>
+</html>
