@@ -331,7 +331,7 @@
     const EMAILJS_SERVICE  = 'service_oa4rkj9';
     const EMAILJS_TEMPLATE = 'template_ryu00b9';
     const EMAILJS_KEY      = 'C7aeJHH1-UuIMgQXD';
-    const TWINT_NUMBER     = '+41 XX XXX XX XX'; // ← DEINE TWINT-NUMMER HIER EINTRAGEN
+    const TWINT_NUMBER     = '079 937 07 79';
 
     emailjs.init(EMAILJS_KEY);
 
@@ -607,8 +607,11 @@
               <div class="twint-step"><div class="twint-step-num">1</div><span>Öffne die TWINT-App auf deinem Smartphone</span></div>
               <div class="twint-step"><div class="twint-step-num">2</div><span>Tippe auf <strong>«Senden»</strong> und gib die Nummer ein</span></div>
               <div class="twint-step"><div class="twint-step-num">3</div><span>Betrag <strong>CHF ${cartTotal()}.–</strong> eingeben und senden</span></div>
-              <div class="twint-step"><div class="twint-step-num">4</div><span>Klicke unten auf <strong>«Zahlung bestätigen»</strong></span></div>
+              <div class="twint-step"><div class="twint-step-num">4</div><span>Klicke unten auf <strong>«Bestellung absenden»</strong></span></div>
             </div>
+          </div>
+          <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;font-size:0.875rem;color:#7a6000;line-height:1.6">
+            ⚠️ <strong>Wichtig:</strong> Deine Bestellung wird erst bearbeitet, nachdem wir den Zahlungseingang auf TWINT manuell überprüft haben. Du erhältst eine Bestätigung per E-Mail.
           </div>
           <button class="btn-primary-full" id="btnConfirm" onclick="confirmOrder()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
