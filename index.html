@@ -103,6 +103,43 @@
     .form-group input:focus,.form-group textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
     .form-group textarea { resize:vertical; min-height:120px; }
     .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+    /* ── Custom Select ── */
+    .select-wrap { position: relative; }
+    .select-wrap select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 2.5rem 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .select-wrap select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .select-wrap select.placeholder { color: var(--text-light); }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--text-secondary);
+      transition: transform 0.2s;
+    }
+    .select-wrap:focus-within::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
     .btn-submit { width:100%; background:var(--accent); color:#fff; font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500; padding:0.9rem; border-radius:100px; border:none; cursor:pointer; transition:background 0.2s,box-shadow 0.2s,transform 0.15s; box-shadow:0 4px 20px var(--accent-glow); margin-top:0.5rem; }
     .btn-submit:hover { background:var(--accent-dark); transform:translateY(-1px); }
     .form-success { display:none; text-align:center; padding:2rem; color:var(--accent); font-weight:500; }
@@ -219,6 +256,19 @@
               <div class="form-group"><label>Name</label><input type="text" id="fname" placeholder="Max Mustermann" /></div>
               <div class="form-group"><label>E-Mail</label><input type="email" id="femail" placeholder="max@beispiel.ch" /></div>
             </div>
+            <div class="form-group">
+              <label>Was braucht ihr?</label>
+              <div class="select-wrap">
+                <select id="fsubject" onchange="this.classList.toggle('placeholder', this.value === '')">
+                  <option value="" disabled selected>Bitte wählen…</option>
+                  <option value="Online Shop">Online Shop</option>
+                  <option value="IT Support">IT Support</option>
+                  <option value="Geräte-Reparatur">Geräte-Reparatur</option>
+                  <option value="Second-Hand Produkt">Second-Hand Produkt</option>
+                  <option value="Anderes">Anderes</option>
+                </select>
+              </div>
+            </div>
             <div class="form-group"><label>Nachricht</label><textarea id="fmsg" placeholder="Beschreib dein Anliegen kurz …"></textarea></div>
             <button class="btn-submit" type="button" onclick="submitForm()">Nachricht absenden →</button>
           </div>
@@ -247,10 +297,33 @@
     btn.addEventListener('click', () => menu.classList.toggle('open'));
     function closeMobileMenu() { menu.classList.remove('open'); }
     document.addEventListener('click', e => { if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open'); });
+
+    // Init select placeholder class
+    document.getElementById('fsubject').classList.add('placeholder');
+
     function submitForm() {
-      const n=document.getElementById('fname').value.trim(), em=document.getElementById('femail').value.trim(), m=document.getElementById('fmsg').value.trim();
-      if(!n||!em||!m){ [{el:document.getElementById('fname'),v:n},{el:document.getElementById('femail'),v:em},{el:document.getElementById('fmsg'),v:m}].forEach(({el,v})=>{ if(!v){el.style.borderColor='#ff5c5c';el.addEventListener('input',()=>el.style.borderColor='',{once:true})} }); return; }
-      document.getElementById('formWrap').style.display='none'; document.getElementById('formSuccess').style.display='block';
+      const n=document.getElementById('fname').value.trim(),
+            em=document.getElementById('femail').value.trim(),
+            subj=document.getElementById('fsubject').value,
+            m=document.getElementById('fmsg').value.trim();
+      const fields = [
+        {el:document.getElementById('fname'),v:n},
+        {el:document.getElementById('femail'),v:em},
+        {el:document.getElementById('fsubject'),v:subj},
+        {el:document.getElementById('fmsg'),v:m}
+      ];
+      if(!n||!em||!subj||!m){
+        fields.forEach(({el,v})=>{
+          if(!v){
+            el.style.borderColor='#ff5c5c';
+            el.addEventListener('change',()=>el.style.borderColor='',{once:true});
+            el.addEventListener('input',()=>el.style.borderColor='',{once:true});
+          }
+        });
+        return;
+      }
+      document.getElementById('formWrap').style.display='none';
+      document.getElementById('formSuccess').style.display='block';
     }
     const navEl=document.querySelector('nav');
     window.addEventListener('scroll',()=>{ navEl.style.boxShadow=window.scrollY>10?'0 2px 20px rgba(0,0,0,0.08)':'none'; });
